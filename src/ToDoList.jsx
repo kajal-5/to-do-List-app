@@ -17,41 +17,65 @@ function ToDoList()
   {
     try
     {
-      const data= await axios.post("https://crudcrud.com/api/cd3de4bc8c20462c83f78a6bb970240a/itemslist",{item});
-      console.log("data",data);
-      if(item.trim()!=='')
-      {
-        setlist((prev)=> {return [...prev,item];});
-      }
-      setItem('');
-      console.log("setlist",list,"item ",item);
+        if(item.trim()==='') return;
+        const update={
+            data:item
+        }
+        
+        const res= await axios.post("https://crudcrud.com/api/cd3de4bc8c20462c83f78a6bb970240a/toDolist",update);
+        console.log("response",res.data);
+
+        setlist((prev)=> [...prev,res.data]);
+
+        setItem('');
     }
-    catch(e)
+    catch(error)
     {
-      console.error("error",e);
+        console.error("error",e);
     }
   }
   
   
   
-  function handleEdit(id){
-    const update="rasmalai";
-    
-    const updatelist= list.map((val,key)=>{
-      if(key==id)
-      val=update;
-      return val;
-    });
-    
-    setlist(updatelist);
-    
+  async function handleEdit(id){
+    try{
+      
+      const edititem=list.find((val)=>val._id==id);
+      
+       const update={
+        data:"rasmalai"
+        
+        };
+      
+      const res= await axios.put(`https://crudcrud.com/api/cd3de4bc8c20462c83f78a6bb970240a/toDolist/${id}`,update);
+      
+      
+      const updatelist = list.map((val)=> {
+        if(val._id==id)
+          return { ...val,data:update.data};
+        return val;
+      });
+      setlist(updatelist);
+      
+    }
+    catch(error){
+      console.error("error",error);
+    }
     
   }
   
-  function handleDelete(id)
+  async function handleDelete(id)
   {
-    const dellist= list.filter((val,key)=> key!==id);
-    setlist(dellist);
+    try{
+      await axios.delete(`https://crudcrud.com/api/cd3de4bc8c20462c83f78a6bb970240a/toDolist/${id}`);
+      const dellist =list.filter((val)=>val._id!==id);
+      setlist(dellist);
+      
+    }
+    catch(error)
+    {
+      console.error("error",error);
+    }
   }
   
   
@@ -72,10 +96,10 @@ function ToDoList()
         <ul>
           {list.map((val,key)=> {
             return (
-              <div>
-                 <li id={key}>{key} index and your item is {val}</li>
-                 <button onClick={()=>handleEdit(key)}>Edit</button>
-                 <button onClick={()=>handleDelete(key)}>Delete</button>
+              <div key={key}>
+                 <li>{key} index and your item is {val.data}</li>
+                 <button onClick={()=>handleEdit(val._id)}>Edit</button>
+                 <button onClick={()=>handleDelete(val._id)}>Delete</button>
               </div>
             
               
