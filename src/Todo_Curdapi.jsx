@@ -12,6 +12,12 @@ function Todo_Curdapi()
   
   
   useEffect(()=>{
+
+    let listdata= localStorage.getItem('todolist');
+    if(listdata)
+    {
+        setList(JSON.parse(listdata));
+    }
     async function fetchData()
     {
         try{    
@@ -27,9 +33,10 @@ function Todo_Curdapi()
     
   },[]);
   
-  // useEffect(()=>{
+  useEffect(()=>{
+    localStorage("todolist",JSON.stringify(list));
     
-  // },[list]);
+  },[list]);
   
   
   
